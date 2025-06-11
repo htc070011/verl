@@ -81,6 +81,24 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
+      - name: Check if setup is needed
+        id: check-setup
+        run: |
+          if [ ! -f "${{ needs.setup.outputs.runner-label }}" ]; then
+            echo "setup-needed=true" >> $GITHUB_OUTPUT
+            resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/create-test" \
+            -d '{"Image": "${{ env.IMAGE }}","RepoUrl": "https://github.com/htc070011/verl","ApiUrl":"https://api.github.com/repos/htc070011/verl/actions/runners/registration-token"}')
+            echo $resp
+            runner_label=$(echo $resp | jq -r '.runner_label')
+            echo $runner_label
+            if [[ -z $runner_label || $runner_label == "null" ]]; then
+              echo "create runner failed"
+              exit 1
+            fi
+            echo "runner_label=$runner_label" >> $GITHUB_OUTPUT   
+            mlp_task_id=$(echo $resp | jq -r '.task_id')
+            echo "mlp_task_id=$mlp_task_id" >> $GITHUB_OUTPUT 
+          fi
       - name: Install the current repository
         run: |
           pip3 install --no-deps -e .[test]
