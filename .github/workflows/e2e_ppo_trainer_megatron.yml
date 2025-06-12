@@ -50,7 +50,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: create-runner
-        uses: plutoZZZZ/verl-github-runner-demo@17c3e862faa5ae2ba8c2e9e494b8a5c93a8d9167
+        uses: plutoZZZZ/verl-github-runner-demo@05ac724a23f02772bd84349bbd8fb508098955c2
         with:
           faas-url: "verl-ci-cn-beijing.cr.volces.com/whatcanyousee/verl:ngc-cu124-vllm0.8.5-sglang0.4.6.post5-mcore0.12.0-te2.3"
           image: "test_image"
