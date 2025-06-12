@@ -53,20 +53,24 @@ jobs:
     steps:
       - name: create runner
         id: create-runner
-        run: |
-          # 调用faas创建runner环境
-          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/create" \
-          -d '{"Image": "${{ env.IMAGE }}"}')
-          echo $resp
-          runner_label=$(echo $resp | jq -r '.runner_label')
-          echo $runner_label
-          if [[ -z $runner_label || $runner_label == "null" ]]; then
-            echo "create runner failed"
-            exit 1
-          fi
-          echo "runner_label=$runner_label" >> $GITHUB_OUTPUT   
-          mlp_task_id=$(echo $resp | jq -r '.task_id')
-          echo "mlp_task_id=$mlp_task_id" >> $GITHUB_OUTPUT 
+        uses: plutoZZZZ/verl-github-runner-demo@cc95fba74616c179cbb111fac05cc0a420c82b10
+        with:
+          faas-url: "verl-ci-cn-beijing.cr.volces.com/whatcanyousee/verl:ngc-cu124-vllm0.8.5-sglang0.4.6.post5-mcore0.12.0-te2.3"
+          image: "test_image"
+        # run: |
+        #   # 调用faas创建runner环境
+        #   resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/create" \
+        #   -d '{"Image": "${{ env.IMAGE }}"}')
+        #   echo $resp
+        #   runner_label=$(echo $resp | jq -r '.runner_label')
+        #   echo $runner_label
+        #   if [[ -z $runner_label || $runner_label == "null" ]]; then
+        #     echo "create runner failed"
+        #     exit 1
+        #   fi
+        #   echo "runner_label=$runner_label" >> $GITHUB_OUTPUT   
+        #   mlp_task_id=$(echo $resp | jq -r '.task_id')
+        #   echo "mlp_task_id=$mlp_task_id" >> $GITHUB_OUTPUT 
   e2e_ppo_trainer_megatron-different-train-infer-tp-qwen-tie-embedding:
     needs: setup
     runs-on: ["${{ needs.setup.outputs.runner-label }}"]
