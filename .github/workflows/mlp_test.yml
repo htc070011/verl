@@ -55,8 +55,8 @@ jobs:
         id: create-runner
         run: |
           # 调用faas创建runner环境
-          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/create-test" \
-          -d '{"Image": "${{ env.IMAGE }}","RepoUrl": "https://github.com/htc070011/verl","ApiUrl":"https://api.github.com/repos/htc070011/verl/actions/runners/registration-token"}')
+          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/create" \
+          -d '{"Image": "${{ env.IMAGE }}"}')
           echo $resp
           runner_label=$(echo $resp | jq -r '.runner_label')
           echo $runner_label
@@ -77,8 +77,8 @@ jobs:
         id: create-runner
         run: |
           # 调用faas创建runner环境
-          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/create-test" \
-          -d '{"Image": "${{ env.IMAGE }}","RepoUrl": "https://github.com/htc070011/verl","ApiUrl":"https://api.github.com/repos/htc070011/verl/actions/runners/registration-token"}')
+          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/create" \
+          -d '{"Image": "${{ env.IMAGE }}"}')
           echo $resp
           runner_label2=$(echo $resp | jq -r '.runner_label')
           echo $runner_label2
