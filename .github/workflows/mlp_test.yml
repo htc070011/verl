@@ -8,6 +8,7 @@ on:
     branches:
       - main
       - v0.*
+      - lusz/mlp_ci
   pull_request:
     branches:
       - main
@@ -66,6 +67,28 @@ jobs:
           echo "runner_label=$runner_label" >> $GITHUB_OUTPUT   
           mlp_task_id=$(echo $resp | jq -r '.task_id')
           echo "mlp_task_id=$mlp_task_id" >> $GITHUB_OUTPUT 
+  setup2:
+    runs-on: ubuntu-latest
+    outputs:
+      runner-label2: ${{ steps.create-runner.outputs.runner_label2 }}
+      mlp-task-id2: ${{ steps.create-runner.outputs.mlp_task_id2 }}
+    steps:
+      - name: create runner
+        id: create-runner
+        run: |
+          # 调用faas创建runner环境
+          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/create-test" \
+          -d '{"Image": "${{ env.IMAGE }}","RepoUrl": "https://github.com/htc070011/verl","ApiUrl":"https://api.github.com/repos/htc070011/verl/actions/runners/registration-token"}')
+          echo $resp
+          runner_label2=$(echo $resp | jq -r '.runner_label')
+          echo $runner_label2
+          if [[ -z $runner_label2 || $runner_label2 == "null" ]]; then
+            echo "create runner failed"
+            exit 1
+          fi
+          echo "runner_label2=$runner_label2" >> $GITHUB_OUTPUT   
+          mlp_task_id2=$(echo $resp | jq -r '.task_id')
+          echo "mlp_task_id2=$mlp_task_id2" >> $GITHUB_OUTPUT 
   e2e_ppo_trainer_megatron-different-train-infer-tp-qwen-tie-embedding:
     needs: setup
     runs-on: ["${{ needs.setup.outputs.runner-label }}"]
@@ -98,8 +121,8 @@ jobs:
         run: |
           rm -rf checkpoints
   e2e_ppo_trainer_megatron-moe-expert-parallel:
-    needs: setup
-    runs-on: ["${{ needs.setup.outputs.runner-label }}"]
+    needs: setup2
+    runs-on: ["${{ needs.setup2.outputs.runner-label2 }}"]
     timeout-minutes: 60 # Increase this timeout value as needed
     env:
       HTTP_PROXY: ${{ secrets.PROXY_HTTP }}
@@ -131,7 +154,7 @@ jobs:
           rm -rf checkpoints
   cleanup: 
     runs-on: ubuntu-latest  
-    needs: [setup,e2e_ppo_trainer_megatron-different-train-infer-tp-qwen-tie-embedding,e2e_ppo_trainer_megatron-moe-expert-parallel]        
+    needs: [setup,e2e_ppo_trainer_megatron-different-train-infer-tp-qwen-tie-embedding,]        
     if: always()          
     steps:
       - name: remove runner
@@ -139,4 +162,15 @@ jobs:
            # 调用faas清理runner环境
            resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/delete-test" \
             -d '{"TaskId": "${{ needs.setup.outputs.mlp-task-id }}"}')
+           echo $resp
+  cleanup2: 
+    runs-on: ubuntu-latest  
+    needs: [setup2,e2e_ppo_trainer_megatron-moe-expert-parallel]        
+    if: always()          
+    steps:
+      - name: remove runner
+        run: |
+           # 调用faas清理runner环境
+           resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/delete-test" \
+            -d '{"TaskId": "${{ needs.setup2.outputs.mlp-task-id2 }}"}')
            echo $resp
