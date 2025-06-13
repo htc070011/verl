@@ -464,7 +464,7 @@ jobs:
 
   cleanup6: 
     runs-on: ubuntu-latest  
-    needs: [setup5,
+    needs: [setup6,
       e2e_ppo_trainer_megatron-qwen2_5vl-3b]        
     if: always()
     steps:
