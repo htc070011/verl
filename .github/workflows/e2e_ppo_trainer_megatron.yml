@@ -47,32 +47,18 @@ env:
 jobs:
   setup:
     runs-on: ubuntu-latest
-    outputs:
-      runner-label: ${{ steps.create-runner.outputs.runner_label }}
-      mlp-task-id: ${{ steps.create-runner.outputs.mlp_task_id }}
     steps:
-      - name: create runner
-        id: create-runner
-        shell: bash
-        run: |
-          if [[ "${{ github.event.repository.full_name }}" != "volcengine/verl" ]]; then
-            echo "no need create runner, skip"
-            exit 0
-          fi
-          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/create" \
-          -d '{"Image": "${{ env.IMAGE }}"}')
-          runner_label=$(echo $resp | jq -r '.runner_label')
-          if [[ -z $runner_label || $runner_label == "null" ]]; then
-            echo "create runner failed"
-            exit 1
-          fi
-          echo "runner_label=$runner_label" >> $GITHUB_OUTPUT   
-          mlp_task_id=$(echo $resp | jq -r '.task_id')
-          echo "mlp_task_id=$mlp_task_id" >> $GITHUB_OUTPUT 
+      - uses: actions/checkout@v4
+      - id: create-runner
+        uses: plutoZZZZ/verl-github-runner-demo@v1-test1
+        with:
+          mode: "create"
+          faas-url: ${{ env.DYNAMIC_RUNNER_ENDPOINT }}
+          mlp-image: ${{ env.IMAGE }}
 
   e2e_ppo_trainer_megatron-deepseek:
     needs: setup
-    runs-on: ["${{ needs.setup.outputs.runner-label || 'L20x8' }}"]
+    runs-on: ["${{ needs.setup.steps.create-runner.outputs.runner-label || 'L20x8' }}"]
     timeout-minutes: 60 # Increase this timeout value as needed
     env:
       HTTP_PROXY: ${{ secrets.PROXY_HTTP }}
@@ -112,7 +98,7 @@ jobs:
           rm -rf checkpoints
   e2e_ppo_trainer_megatron-qwen3:
     needs: setup
-    runs-on: ["${{ needs.setup.outputs.runner-label || 'L20x8' }}"]
+    runs-on: ["${{ needs.setup.steps.create-runner.outputs.runner-label || 'L20x8' }}"]
     timeout-minutes: 60 # Increase this timeout value as needed
     env:
       HTTP_PROXY: ${{ secrets.PROXY_HTTP }}
@@ -149,7 +135,7 @@ jobs:
           rm -rf checkpoints
   e2e_ppo_trainer_megatron-different-train-infer-tp-qwen-tie-embedding:
     needs: setup
-    runs-on: ["${{ needs.setup.outputs.runner-label || 'L20x8' }}"]
+    runs-on: ["${{ needs.setup.steps.create-runner.outputs.runner-label || 'L20x8' }}"]
     timeout-minutes: 60 # Increase this timeout value as needed
     env:
       HTTP_PROXY: ${{ secrets.PROXY_HTTP }}
@@ -180,7 +166,7 @@ jobs:
           rm -rf checkpoints
   e2e_ppo_trainer_megatron-qwen-override-transformer-config:
     needs: setup
-    runs-on: ["${{ needs.setup.outputs.runner-label || 'L20x8' }}"]
+    runs-on: ["${{ needs.setup.steps.create-runner.outputs.runner-label || 'L20x8' }}"]
     timeout-minutes: 60 # Increase this timeout value as needed
     env:
       HTTP_PROXY: ${{ secrets.PROXY_HTTP }}
@@ -217,7 +203,7 @@ jobs:
           rm -rf checkpoints
   e2e_ppo_trainer_megatron-deepseek-override-transformer-config:
     needs: setup
-    runs-on: ["${{ needs.setup.outputs.runner-label || 'L20x8' }}"]
+    runs-on: ["${{ needs.setup.steps.create-runner.outputs.runner-label || 'L20x8' }}"]
     timeout-minutes: 60 # Increase this timeout value as needed
     env:
       HTTP_PROXY: ${{ secrets.PROXY_HTTP }}
@@ -249,7 +235,7 @@ jobs:
           rm -rf checkpoints
   e2e_ppo_trainer_megatron-moe-expert-parallel:
     needs: setup
-    runs-on: ["${{ needs.setup.outputs.runner-label || 'L20x8' }}"]
+    runs-on: ["${{ needs.setup.steps.create-runner.outputs.runner-label || 'L20x8' }}"]
     timeout-minutes: 60 # Increase this timeout value as needed
     env:
       HTTP_PROXY: ${{ secrets.PROXY_HTTP }}
@@ -281,7 +267,7 @@ jobs:
           rm -rf checkpoints
   e2e_ppo_trainer_megatron-qwen2_5vl-3b:
     needs: setup
-    runs-on: ["${{ needs.setup.outputs.runner-label || 'L20x8' }}"]
+    runs-on: ["${{ needs.setup.steps.create-runner.outputs.runner-label || 'L20x8' }}"]
     timeout-minutes: 60 # Increase this timeout value as needed
     env:
       HTTP_PROXY: ${{ secrets.PROXY_HTTP }}
@@ -320,13 +306,11 @@ jobs:
       e2e_ppo_trainer_megatron-deepseek-override-transformer-config,
       e2e_ppo_trainer_megatron-moe-expert-parallel,
       e2e_ppo_trainer_megatron-qwen2_5vl-3b]        
-    if: always()          
+    if: always()
     steps:
-      - name: remove runner
-        run: |
-          if [[ -z "${{ needs.setup.outputs.mlp-task-id }}" ]]; then
-            echo "no need remove runner, skip"
-          fi
-          # 调用faas清理runner环境
-          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/delete" \
-          -d '{"TaskId": "${{ needs.setup.outputs.mlp-task-id }}"}')
+      - id: destory-runner
+        uses: plutoZZZZ/verl-github-runner-demo@v1-test1
+        with:
+          mode: "destory"
+          faas-url: ${{ env.DYNAMIC_RUNNER_ENDPOINT }}
+          mlp-task-id: "${{ needs.setup.steps.create-runner.outputs.mlp_task_id }}"

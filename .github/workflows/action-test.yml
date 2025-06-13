@@ -8,7 +8,7 @@ on:
     branches:
       - main
       - v0.*
-      - lusz/mlp_ci
+      # - lusz/mlp_ci
   pull_request:
     branches:
       - main
