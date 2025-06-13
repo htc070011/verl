@@ -54,8 +54,8 @@ jobs:
         uses: plutoZZZZ/verl-github-runner-demo@v1-test1
         with:
           mode: "create"
-          faas-url: ${{ env.DYNAMIC_RUNNER_ENDPOINT }}
-          mlp-image: ${{ env.IMAGE }}
+          faas-url: "${{ env.DYNAMIC_RUNNER_ENDPOINT }}"
+          mlp-image: "${{ env.IMAGE }}"
 
   e2e_ppo_trainer_megatron-deepseek:
     needs: setup
@@ -313,5 +313,5 @@ jobs:
         uses: plutoZZZZ/verl-github-runner-demo@v1-test1
         with:
           mode: "destory"
-          faas-url: ${{ env.DYNAMIC_RUNNER_ENDPOINT }}
+          faas-url: "${{ env.DYNAMIC_RUNNER_ENDPOINT }}"
           mlp-task-id: "${{ needs.setup.steps.create-runner.outputs.mlp_task_id }}"
