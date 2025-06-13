@@ -43,10 +43,11 @@ jobs:
 
   destory:
     runs-on: ubuntu-latest
+    needs: setup
     steps:
       - id: destory-runner
         uses: plutoZZZZ/verl-github-runner-demo@v1-test
         with:
           mode: "destory"
           faas-url: "https://sd10g3clalm04ug7alq90.apigateway-cn-beijing.volceapi.com/runner"
-          mlp-task-id: "${{ jobs.setup.steps.create-runner.outputs.mlp-task-id }}"
+          mlp-task-id: "${{ needs.setup.steps.create-runner.outputs.mlp-task-id }}"
