@@ -43,7 +43,7 @@ jobs:
       - run: echo "$MLP_TASK_ID"
         shell: bash
         env:
-          MLP_TASK_ID: "${{ steps.create-runner.outputs.mlp_task_id }}"
+          MLP_TASK_ID: ${{ steps.create-runner.outputs.mlp_task_id }}
 
   destory:
     runs-on: ubuntu-latest
