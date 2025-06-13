@@ -35,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: create-runner
-        uses: plutoZZZZ/verl-github-runner-demo@v1-test
+        uses: plutoZZZZ/verl-github-runner-demo@v1-test1
         with:
           mode: "create"
           faas-url: "https://sd10g3clalm04ug7alq90.apigateway-cn-beijing.volceapi.com/runner"
@@ -50,7 +50,7 @@ jobs:
     needs: setup
     steps:
       - id: destory-runner
-        uses: plutoZZZZ/verl-github-runner-demo@v1-test
+        uses: plutoZZZZ/verl-github-runner-demo@v1-test1
         with:
           mode: "destory"
           faas-url: "https://sd10g3clalm04ug7alq90.apigateway-cn-beijing.volceapi.com/runner"
