@@ -317,4 +317,4 @@ jobs:
         with:
           mode: "destory"
           faas-url: "${{ env.DYNAMIC_RUNNER_ENDPOINT }}"
-          mlp-task-id: "${{ needs.setup.steps.create-runner.outputs.mlp_task_id }}"
+          mlp-task-id: "${{ needs.setup.outputs.mlp_task_id }}"
