@@ -51,3 +51,7 @@ jobs:
           mode: "destory"
           faas-url: "https://sd10g3clalm04ug7alq90.apigateway-cn-beijing.volceapi.com/runner"
           mlp-task-id: "${{ needs.setup.steps.create-runner.outputs.mlp_task_id }}"
+      - run: echo "$MLP_TASK_ID"
+        shell: bash
+        env:
+          MLP_TASK_ID: "${{ needs.setup.steps.create-runner.outputs.mlp_task_id }}"
