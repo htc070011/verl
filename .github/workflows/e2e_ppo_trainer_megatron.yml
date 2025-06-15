@@ -56,11 +56,11 @@ jobs:
       - name: create runner
         id: create-runner
         run: |
-          # if [[ "${{ github.event.repository.full_name }}" != "volcengine/verl" ]]; then
-          #   echo "no need create runner"
-          #   exit 0
-          # fi
-          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/create-test" \
+          if [[ "${{ github.event.repository.full_name }}" != "volcengine/verl" ]]; then
+            echo "no need create runner"
+            exit 0
+          fi
+          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/create" \
           -d '{"Image": "${{ env.IMAGE }}"}')
           runner_label=$(echo $resp | jq -r '.runner_label')
           if [[ -z $runner_label || $runner_label == "null" ]]; then
@@ -73,7 +73,6 @@ jobs:
 
   e2e_ppo_trainer_megatron-deepseek:
     needs: setup
-
     runs-on: "${{ needs.setup.outputs.runner-label || 'ubuntu-latest' }}" 
     timeout-minutes: 60 # Increase this timeout value as needed
     env:
@@ -122,9 +121,9 @@ jobs:
     steps:
       - name: remove runner
         run: |
-          # if [[ -z "${{ needs.setup.outputs.mlp-task-id }}" ]]; then
-          #   echo no need remove runner
-          #   exit 0
-          # fi
-          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/delete-test" \
+          if [[ -z "${{ needs.setup.outputs.mlp-task-id }}" ]]; then
+            echo no need remove runner
+            exit 0
+          fi
+          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/delete" \
             -d '{"TaskId": "${{ needs.setup.outputs.mlp-task-id }}"}')
