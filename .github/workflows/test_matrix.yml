@@ -67,8 +67,8 @@ jobs:
           runner_labels=()
           mlp_task_ids=()
           for i in {0..6}; do
-            runner_labels+=("${{ steps.create-runner.outputs.runner-label-$i }}")
-            mlp_task_ids+=("${{ steps.create-runner.outputs.mlp-task-id-$i }}")
+            runner_labels+=("$(echo '${{ steps.create-runner.outputs }}' | jq -r ".\"runner-label-$i\"")")
+            mlp_task_ids+=("$(echo '${{ steps.create-runner.outputs }}' | jq -r ".\"mlp-task-id-$i\"")")
           done
           echo "runner-labels=$(printf "%s," "${runner_labels[@]}")" >> $GITHUB_OUTPUT
           echo "mlp-task-ids=$(printf "%s," "${mlp_task_ids[@]}")" >> $GITHUB_OUTPUT
@@ -134,7 +134,7 @@ jobs:
       - name: Prepare ${{ matrix.config.dataset }} dataset
         run: |
           python3 examples/data_preprocess/${{ matrix.config.dataset }}.py
-      - name: Running ${{ matrix.config.dataset }} E2E training tests with 3D parallelism on 8 L20 GPUs with Megatron (${{ matrix.config.model.split('/')[-1] }})
+      - name: Running ${{ matrix.config.dataset }} E2E training tests with 3D parallelism on 8 L20 GPUs with Megatron (${{ last(split(matrix.config.model, '/')) }})
         run: |
           ray stop --force
           case ${{ matrix.index }} in
