@@ -1,0 +1,44 @@
+name: codecov combine
+
+on:
+  workflow_run:
+    workflows: ["model_rmpad","gpu_unit_tests"]  
+    types:
+      - completed      
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+  download_artifact:
+    runs-on: ubuntu-latest
+    # needs: [model_rmpad, model_rmpad_fsdp2_unstable]
+    # needs: [ model_rmpad_fsdp2_unstable]
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          path: |
+            model_rmpad_coverage_report
+            model_rmpad_fsdp2_unstable_coverage_report
+      - name: ls
+        run: |
+          ls -ahl
+          ls -ahl model_rmpad_coverage_report/
+          ls -ahl model_rmpad_fsdp2_unstable_coverage_report/
+          exit 0
+      - name: ls
+        run: ls -ahl
+      
+
+  # - name: Check Codecov status
+  #   check-coverage:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Check Codecov status
+  #       uses: codecov/codecov-action@v5
+  #       with:
+  #         fail_ci_if_error: true  # 如果覆盖率不达标，则失败
+  #         wait: true  # 等待所有报告上传完成

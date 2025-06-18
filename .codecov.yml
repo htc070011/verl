@@ -1,0 +1,9 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 85%  # 设置整体覆盖率目标
+        threshold: 1%  # 允许的波动范围
+    patch:
+      default:
+        target: 80%  # 设置补丁的覆盖率目标
