@@ -52,8 +52,8 @@ jobs:
       matrix:
         index: [0, 1, 2, 3, 4, 5, 6]
     outputs:
-      runner-label-${{ matrix.index }}: ${{ steps.create-runner.outputs.runner-label }}
-      mlp-task-id-${{ matrix.index }}: ${{ steps.create-runner.outputs.mlp-task-id }}
+      runner-label-${{ strategy.matrix.index }}: ${{ steps.create-runner.outputs.runner-label }}
+      mlp-task-id-${{ strategy.matrix.index }}: ${{ steps.create-runner.outputs.mlp-task-id }}
     steps:
       - uses: actions/checkout@v4
       - id: create-runner
@@ -105,7 +105,7 @@ jobs:
             dataset: "geo3k"
           }
         ]
-    runs-on: ["${{ needs.setup.outputs.runner-label-${{ matrix.index }} || 'L20x8' }}"]
+    runs-on: ["${{ needs.setup.outputs['runner-label-' + matrix.index] || 'L20x8' }}"]
     timeout-minutes: 60
     env:
       HTTP_PROXY: ${{ secrets.PROXY_HTTP }}
@@ -214,4 +214,4 @@ jobs:
         with:
           mode: "destroy"
           faas-url: "${{ env.DYNAMIC_RUNNER_ENDPOINT }}"
-          mlp-task-id: "${{ needs.setup.outputs.mlp-task-id-${{ matrix.index }} }}"
+          mlp-task-id: "${{ needs.setup.outputs['mlp-task-id-' + matrix.index] }}"
