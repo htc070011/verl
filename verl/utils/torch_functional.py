@@ -78,6 +78,13 @@ def logprobs_from_logits(logits, labels, inplace_backward=True):
     Returns:
         Tensor: Log-probabilities of the target labels, shape logits.shape[:-1].
     """
+    print("inplace_backward", inplace_backward)
+    print("inplace_backward", inplace_backward)
+    print("inplace_backward", inplace_backward)
+    print("inplace_backward", inplace_backward)
+    print("inplace_backward", inplace_backward)
+    print("inplace_backward", inplace_backward)
+    print("inplace_backward", inplace_backward)
     if FLAH_ATTN_CROSS_ENTROPY_LOSS_AVAILABLE:
         batch_dim = logits.shape[:-1]
         last_dim = logits.shape[-1]
