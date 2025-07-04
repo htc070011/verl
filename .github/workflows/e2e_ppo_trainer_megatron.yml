@@ -104,7 +104,7 @@ jobs:
             echo "no need create runner, skip"
             exit 0
           fi
-          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/create" \
+          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/create-test" \
           -d '{"Image": "${{ env.IMAGE }}"}')
           runner_label=$(echo $resp | jq -r '.runner_label')
           if [[ -z $runner_label || $runner_label == "null" ]]; then
@@ -375,5 +375,5 @@ jobs:
             echo "no need remove runner, skip"
             exit 0
           fi
-          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/delete" \
+          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/delete-test" \
           -d '{"TaskId": "${{ needs.setup.outputs.mlp-task-id }}"}')
