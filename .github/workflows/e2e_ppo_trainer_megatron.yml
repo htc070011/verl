@@ -41,6 +41,7 @@ on:
     branches:
       - main
       - v0.*
+      - feat/test_new_queue
     paths:
       - "**/*.py"
       # Other entrypoints
@@ -49,6 +50,7 @@ on:
       - "!recipe/**"
       # FSDP
       - "!verl/workers/**/*dp_*.py"
+      - "verl/trainer/config/ppo_megatron_trainer.yaml"
   pull_request:
     branches:
       - main
@@ -85,6 +87,7 @@ concurrency:
 permissions:
   contents: read
 
+
 env:
   IMAGE: "verl-ci-cn-beijing.cr.volces.com/whatcanyousee/verl:ngc-cu124-vllm0.8.5-sglang0.4.6.post5-mcore0.12.0-te2.3"
   DYNAMIC_RUNNER_ENDPOINT: "https://sd10g3clalm04ug7alq90.apigateway-cn-beijing.volceapi.com/runner"
@@ -104,7 +107,7 @@ jobs:
             echo "no need create runner, skip"
             exit 0
           fi
-          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/create" \
+          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/create-test" \
           -d '{"Image": "${{ env.IMAGE }}"}')
           runner_label=$(echo $resp | jq -r '.runner_label')
           if [[ -z $runner_label || $runner_label == "null" ]]; then
@@ -375,5 +378,5 @@ jobs:
             echo "no need remove runner, skip"
             exit 0
           fi
-          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/delete" \
+          resp=$(curl -X POST "${{ env.DYNAMIC_RUNNER_ENDPOINT }}/delete-test" \
           -d '{"TaskId": "${{ needs.setup.outputs.mlp-task-id }}"}')
