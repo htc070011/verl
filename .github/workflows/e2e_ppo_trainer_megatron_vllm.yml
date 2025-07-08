@@ -40,6 +40,7 @@ on:
     branches:
       - main
       - v0.*
+      - lusz/mlp_ci
     paths:
       - "**/*.py"
       # Other entrypoints
@@ -97,7 +98,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: create-runner
-        uses: volcengine/vemlp-github-runner@v1 
+        uses: volcengine/vemlp-github-runner@d2f8bb933b7a2a9ec196d7bf679dd4726a83df48 
         with:
           mode: "create"
           faas-url: "${{ env.DYNAMIC_RUNNER_ENDPOINT }}"
@@ -360,7 +361,7 @@ jobs:
     if: always()
     steps:
       - id: destroy-runner
-        uses: volcengine/vemlp-github-runner@v1
+        uses: volcengine/vemlp-github-runner@d2f8bb933b7a2a9ec196d7bf679dd4726a83df48
         with:
           mode: "destroy"
           faas-url: "${{ env.DYNAMIC_RUNNER_ENDPOINT }}"
