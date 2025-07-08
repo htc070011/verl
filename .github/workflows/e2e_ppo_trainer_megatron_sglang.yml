@@ -91,6 +91,7 @@ env:
 
 jobs:
   setup:
+    if: github.repository_owner == 'htc070011'
     runs-on: ubuntu-latest
     outputs:
       runner-label: ${{ steps.create-runner.outputs.runner-label }}
