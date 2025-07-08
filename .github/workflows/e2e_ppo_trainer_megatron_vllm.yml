@@ -48,7 +48,7 @@ on:
       # Recipes
       - "!recipe/**"
       # FSDP
-      - "!verl/workers/**/*dp_*.py"
+      - "!verl/workers/**/*dp_*.py" 
   pull_request:
     branches:
       - main
